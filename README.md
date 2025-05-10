@@ -4,7 +4,7 @@
 
 This repository contains the official documentation for integrating Dropio into your project — from setup to customization.
 
-👉 View the live documentation: [docs.dropio.dev](https://docs.dropio.my.id)
+👉 View the live documentation: [docs.dropio.my.id](https://docs.dropio.my.id)
 
 ---
 
