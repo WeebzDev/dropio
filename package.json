@@ -43,5 +43,6 @@
   },
   "engines": {
     "node": ">=18.0"
-  }
+  },
+  "homepage": "https://weebzdev.github.io/dropio"
 }
