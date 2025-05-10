@@ -1,41 +1,33 @@
-# Website
+# Dropio Docs
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+📦 **Dropio** is a modern, developer-friendly file upload and delivery platform designed to support everything from simple file transfers to advanced multi-part uploads with real-time progress tracking.
 
-### Installation
+This repository contains the official documentation for integrating Dropio into your project — from setup to customization.
 
-```
-$ yarn
-```
+👉 View the live documentation: [docs.dropio.dev](https://docs.dropio.my.id)
 
-### Local Development
+---
 
-```
-$ yarn start
-```
+## ✨ Key Features
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+- 🚀 Upload files easily via a simple frontend or API
+- ☁️ Store files using local or object storage (S3-compatible)
+- 🔐 Protect uploads with token-based authentication
+- 📡 Track upload progress in real-time via WebSocket
+- 🗂️ Manage file metadata and statuses
+- 🧩 Seamlessly integrate with your existing frontend/backend stack
 
-### Build
+---
 
-```
-$ yarn build
-```
+## 📌 Project Status
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+> Dropio is currently in private beta and is not yet available for public use.
 
-### Deployment
+---
 
-Using SSH:
+## 📬 Contact
 
-```
-$ USE_SSH=true yarn deploy
-```
+Interested in early access or have any questions?
 
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+- 🌐 Website: [dropio.dev](https://dropio.my.id)
+- 📧 Email: [contact@dropio.dev](mailto:contact@dropio.dev)
