@@ -1,47 +1,33 @@
 ---
 sidebar_position: 1
+title: Introduction
 ---
 
-# Tutorial Intro
+# 🚀 Welcome to Dropio
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**Dropio** is a modern, developer-friendly file upload and delivery platform built to handle everything from simple file transfers to advanced multi-part uploads with real-time progress tracking.
 
-## Getting Started
+This documentation will guide you through the process of integrating Dropio into your project—from setup to customization.
 
-Get started by **creating a new site**.
+## 🎯 What is Dropio?
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+Dropio helps you:
 
-### What you'll need
+- 📦 Upload files easily via a simple frontend or API
+- ☁️ Store files using local or object storage like S3
+- 🔒 Protect uploads with token-based authentication
+- 📡 Track upload progress via WebSocket
+- 🔄 Manage submitted files and metadata
+- ⚙️ Integrate seamlessly into your existing frontend/backend stack
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+It's especially useful for developers building:
 
-## Generate a new site
+- SaaS platforms that require file upload functionality
+- Content submission systems (e.g., osu! mapping tools, forms)
+- Internal tools or dashboards with media support
+- Developer tools and utilities requiring temporary or persistent file storage
 
-Generate a new Docusaurus site using the **classic template**.
+## 🚧 More Documentation Coming Soon
 
-The classic template will automatically be added to your project after you run the command:
+👉 Ready to get started? Let’s begin by <a href="https://dropio.my.id/" target="_blank" rel="noopener noreferrer">setting up your first Dropio project</a>!
 
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
