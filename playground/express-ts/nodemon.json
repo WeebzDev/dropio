@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "."
+  ],
+  "ext": "ts",
+  "exec": "npx ts-node -r tsconfig-paths/register ./index.ts"
+}
