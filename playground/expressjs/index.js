@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const diolib = require('./lib/dropio/server');
 const app = express();
 const port = 5010;
@@ -15,6 +16,7 @@ const ourFileRouter = {
   }),
 };
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/api/dropio', (req, res) => {
