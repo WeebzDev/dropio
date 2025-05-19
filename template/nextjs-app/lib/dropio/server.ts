@@ -31,7 +31,7 @@ type FileValidationOptions = Partial<
   >
 >;
 
-export type UploadMetadataRequest = {
+type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;

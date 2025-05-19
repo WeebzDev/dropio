@@ -1,10 +1,18 @@
-import type { UploadMetadataRequest, UploadMetadataResponse } from "./server";
-
 // ==== Types ====
 
 type UploaderOptions = {
   customServerUrl?: string;
 };
+
+type UploadMetadataRequest = {
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+};
+
+type UploadMetadataResponse =
+  | { isError: false; presignedUrl: string; key: string }
+  | { isError: true; message: string };
 
 type UploadRequest = {
   file: File;
@@ -13,7 +21,7 @@ type UploadRequest = {
 };
 
 type ApiResponse<T> = {
-  status: "success" | "error";
+  status: 'success' | 'error';
   code: number;
   data: T | null;
   message: string | null;
@@ -45,22 +53,17 @@ export function createUploader() {
       result: UploadResult;
       abort: () => void;
     }> {
-      if (typeof window === "undefined") {
-        throw new Error(
-          "createUploader can only be used in a browser environment",
-        );
+      if (typeof window === 'undefined') {
+        throw new Error('createUploader can only be used in a browser environment');
       }
 
       const { file, onProgress, onStatusChange } = request;
 
-      if (typeof onStatusChange === "function") {
+      if (typeof onStatusChange === 'function') {
         onStatusChange(true);
       }
 
-      const presignedUrlResult = await getPresignedUrl(
-        file,
-        options.customServerUrl,
-      );
+      const presignedUrlResult = await getPresignedUrl(file, options.customServerUrl);
       if (presignedUrlResult.isError) {
         return {
           result: { isError: true, message: presignedUrlResult.result },
@@ -77,7 +80,7 @@ export function createUploader() {
 
       const uploadResult = await uploadPromise;
 
-      if (typeof onStatusChange === "function") {
+      if (typeof onStatusChange === 'function') {
         onStatusChange(false);
       }
 
@@ -88,21 +91,18 @@ export function createUploader() {
 
 // ==== Helpers ====
 
-async function getPresignedUrl(
-  file: File,
-  serverUrl?: string,
-): Promise<{ isError: boolean; result: string }> {
+async function getPresignedUrl(file: File, serverUrl?: string): Promise<{ isError: boolean; result: string }> {
   const requestPayload: UploadMetadataRequest = {
     fileName: file.name,
     fileSize: file.size,
     fileType: file.type,
   };
 
-  const endpoint = serverUrl ?? "/api/dropio";
+  const endpoint = serverUrl ?? '/api/dropio';
 
   const response = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestPayload),
   });
 
@@ -111,7 +111,7 @@ async function getPresignedUrl(
   if (!response.ok || responseData.isError) {
     return {
       isError: true,
-      result: responseData.isError ? responseData.message : "Unknown error",
+      result: responseData.isError ? responseData.message : 'Unknown error',
     };
   }
 
@@ -133,10 +133,10 @@ function uploadFileToIngestServer({
   const xhr = new XMLHttpRequest();
 
   const result = new Promise<UploadResult>((resolve) => {
-    xhr.open("POST", presignedUrl, true);
+    xhr.open('POST', presignedUrl, true);
 
     xhr.upload.onprogress = (event: ProgressEvent) => {
-      if (event.lengthComputable && typeof onProgress === "function") {
+      if (event.lengthComputable && typeof onProgress === 'function') {
         const percentUploaded = Math.round((event.loaded / event.total) * 100);
         onProgress(percentUploaded);
       }
@@ -144,33 +144,27 @@ function uploadFileToIngestServer({
 
     xhr.onload = () => {
       try {
-        const parsedResponse = JSON.parse(
-          xhr.responseText,
-        ) as ApiResponse<UploadedFileInfo>;
+        const parsedResponse = JSON.parse(xhr.responseText) as ApiResponse<UploadedFileInfo>;
 
-        if (
-          xhr.status === 201 &&
-          parsedResponse.status === "success" &&
-          parsedResponse.data
-        ) {
+        if (xhr.status === 201 && parsedResponse.status === 'success' && parsedResponse.data) {
           resolve({ isError: false, ...parsedResponse.data });
         } else {
           resolve({
             isError: true,
-            message: parsedResponse.message ?? "Upload failed",
+            message: parsedResponse.message ?? 'Upload failed',
           });
         }
       } catch {
-        resolve({ isError: true, message: "Failed to parse server response" });
+        resolve({ isError: true, message: 'Failed to parse server response' });
       }
     };
 
     xhr.onerror = () => {
-      resolve({ isError: true, message: "Upload failed due to network error" });
+      resolve({ isError: true, message: 'Upload failed due to network error' });
     };
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     xhr.send(formData);
   });
 
