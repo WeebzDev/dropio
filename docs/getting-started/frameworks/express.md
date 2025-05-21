@@ -405,6 +405,21 @@ exports.DIOApi = DIOApi;
   </TabItem>
 </Tabs>
 
+:::warning[**Note on Supported File Types**]
+> The list of MIME types is not fully supported yet. At the moment, **only image files** are allowed. If you attempt to upload a non-image file, you will receive an error response like the following:
+
+```ts
+  error: true,
+  message: "Invalid file type. Only image files are allowed.",
+  code: 400,
+```
+:::
+
+:::warning[**Note on Supported Upload File Count**]
+> Additionally, only one file can be uploaded at a time.
+Support for multiple file uploads is planned in future updates.
+:::
+
 ### Add env variables
 
 > If you haven’t generated your Dropio secret key yet, simply [sign up](https://www.dropio.my.id/sign-in) and create one directly from the dashboard.
@@ -461,6 +476,10 @@ app.listen(port, () => {
 
   </TabItem>
   <TabItem value='javascript' label='Javascript'>
+> We recommend using **TypeScript** for a better developer experience and improved type safety.  
+However, **JavaScript** is fully supported — feel free to use whichever works best for you.  
+Good luck have fun building with JavaScript!
+
     
 ```js title="src/index.js"
 require('dotenv').config();

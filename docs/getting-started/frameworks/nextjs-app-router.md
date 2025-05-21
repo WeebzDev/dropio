@@ -241,6 +241,21 @@ export class DIOApi {
 
 </details>
 
+:::warning[**Note on Supported File Types**]
+> The list of MIME types is not fully supported yet. At the moment, **only image files** are allowed. If you attempt to upload a non-image file, you will receive an error response like the following:
+
+```ts
+  error: true,
+  message: "Invalid file type. Only image files are allowed.",
+  code: 400,
+```
+:::
+
+:::warning[**Note on Supported Upload File Count**]
+> Additionally, only one file can be uploaded at a time.
+Support for multiple file uploads is planned in future updates.
+:::
+
 #### Client Side Code
 
 <details>
