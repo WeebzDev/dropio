@@ -3,31 +3,27 @@ sidebar_position: 1
 title: Introduction
 ---
 
-# 🚀 Welcome to Dropio
+# Welcome to Dropio
 
-**Dropio** is a modern, developer-friendly file upload and delivery platform built to handle everything from simple file transfers to advanced multi-part uploads with real-time progress tracking.
+**Dropio** is a modern file upload platform designed for developers in Indonesia. Inspired by UploadThing, Dropio simplifies the process of uploading and managing files, making it easy to integrate flexible file upload functionality into your web applications.
 
-This documentation will guide you through the process of integrating Dropio into your project—from setup to customization.
 
-## 🎯 What is Dropio?
+### Getting Started
 
-Dropio helps you:
+To get started, create a new application on the [dropio.my.id](https://www.dropio.my.id) and grab an API key from the API Keys tab. Then select your framework to learn how to integrate Dropio in your application in minutes.
 
-- 📦 Upload files easily via a simple frontend or API
-- ☁️ Store files using local or object storage like S3
-- 🔒 Protect uploads with token-based authentication
-- 📡 Track upload progress via WebSocket
-- 🔄 Manage submitted files and metadata
-- ⚙️ Integrate seamlessly into your existing frontend/backend stack
+### Frameworks & Library
 
-It's especially useful for developers building:
+#### Frontend
 
-- SaaS platforms that require file upload functionality
-- Content submission systems (e.g., osu! mapping tools, forms)
-- Internal tools or dashboards with media support
-- Developer tools and utilities requiring temporary or persistent file storage
+- **[Next.js (App Router)](#)** — React + TypeScript / JavaScript
+- **[React & Vite](#)** — React + TypeScript / JavaScript
 
-## 🚧 More Documentation Coming Soon
+#### Backend
 
-👉 Ready to get started? Let’s begin by <a href="https://dropio.my.id/" target="_blank" rel="noopener noreferrer">setting up your first Dropio project</a>!
+- **[Express](#)** — JavaScript / TypeScript
+
+> We’re actively working to support more frameworks and library — stay tuned!  
+We also open source our framework templates. If you're interested, feel free to contribute by creating a template for your favorite framework.
+
 
