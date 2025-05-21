@@ -34,9 +34,9 @@ export type AllowedMimeTypes =
   | 'video'
   | 'audio';
 
-type PowOf2 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
-type FileSize = `${PowOf2}${SizeUnit}`;
+type FileSize = `${OneToTen}${SizeUnit}`;
 
 type FileValidationOptions = Partial<
   Record<
@@ -52,6 +52,7 @@ export type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;
+  customeId: string;
 };
 
 type generatePresignURLOptions = {
@@ -121,7 +122,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
   error: boolean;
   message?: string;
 } {
-  const required: (keyof UploadMetadataRequest)[] = ['fileName', 'fileSize', 'fileType'];
+  const required: (keyof UploadMetadataRequest)[] = ['fileName', 'fileSize', 'fileType', 'customeId'];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
     return { error: true, message: `Missing fields: ${missing.join(', ')}` };
@@ -131,7 +132,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
 
 function generatePresignURL(options: generatePresignURLOptions): generatePresignURLResponse {
   const { data, ContentDiposition, expire, route } = options;
-  const { fileName, fileSize, fileType } = data;
+  const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
@@ -139,6 +140,7 @@ function generatePresignURL(options: generatePresignURLOptions): generatePresign
 
   const params = new URLSearchParams({
     expire: expires.toString(),
+    customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID!,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),
@@ -454,6 +456,10 @@ export const ourFileRouter = {
 export async function POST(req: Request): Promise<NextResponse<UploadMetadataResponse>> {
   const metadata = (await req.json()) as UploadMetadataRequest;
 
+  // Define your auth here
+  const yourAuth = 'fakeId';
+  metadata.customeId = yourAuth;
+
   const result = ourFileRouter.fileUploader(metadata);
 
   return NextResponse.json(result, {
@@ -479,11 +485,11 @@ export const { DioUploader } = {
 ### Example
 
 ```tsx title="form.tsx"
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { DioUploader } from "@/utils/dropio";
+import { DioUploader } from '@/utils/dropio';
 
 export function Form() {
   const [loading, setLoading] = useState<number>(0);
