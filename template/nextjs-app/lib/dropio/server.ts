@@ -1,6 +1,5 @@
 import { randomBytes, createHash, createHmac } from "crypto";
 
-// 1. Define allowed MIME types for autocomplete support
 export type AllowedMimeTypes =
   | "image/png"
   | "image/jpeg"
@@ -17,9 +16,9 @@ export type AllowedMimeTypes =
   | "video"
   | "audio";
 
-type PowOf2 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 type SizeUnit = "B" | "KB" | "MB" | "GB";
-type FileSize = `${PowOf2}${SizeUnit}`;
+type FileSize = `${OneToTen}${SizeUnit}`;
 
 type FileValidationOptions = Partial<
   Record<
@@ -31,10 +30,11 @@ type FileValidationOptions = Partial<
   >
 >;
 
-type UploadMetadataRequest = {
+export type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;
+  customeId: string;
 };
 
 type generatePresignURLOptions = {
@@ -108,6 +108,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
     "fileName",
     "fileSize",
     "fileType",
+    "customeId",
   ];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
@@ -120,7 +121,7 @@ function generatePresignURL(
   options: generatePresignURLOptions,
 ): generatePresignURLResponse {
   const { data, ContentDiposition, expire, route } = options;
-  const { fileName, fileSize, fileType } = data;
+  const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash("sha256")
     .update(randomBytes(18).toString("hex"))
@@ -132,6 +133,7 @@ function generatePresignURL(
 
   const params = new URLSearchParams({
     expire: expires.toString(),
+    customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID!,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),

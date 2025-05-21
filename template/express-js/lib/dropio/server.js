@@ -33,7 +33,7 @@ function formatBytes(bytes) {
 }
 
 function validateUploadMetadataRequest(query) {
-  const required = ['fileName', 'fileSize', 'fileType'];
+  const required = ['fileName', 'fileSize', 'fileType', 'customeId'];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
     return { error: true, message: `Missing fields: ${missing.join(', ')}` };
@@ -43,7 +43,7 @@ function validateUploadMetadataRequest(query) {
 
 function generatePresignURL(options) {
   const { data, ContentDiposition, expire, route } = options;
-  const { fileName, fileSize, fileType } = data;
+  const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
@@ -51,6 +51,7 @@ function generatePresignURL(options) {
 
   const params = new URLSearchParams({
     expire: expires.toString(),
+    customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),
