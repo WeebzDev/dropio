@@ -21,6 +21,11 @@ app.use(express.json());
 
 app.post('/api/dropio', (req, res) => {
   const metadata = req.body;
+
+  // Define your auth here
+  const yourAuth = 'fakeId';
+  metadata.customeId = yourAuth;
+
   const result = ourFileRouter.fileUploader(metadata);
   res.status(200).json(result);
 });
