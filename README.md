@@ -1,8 +1,9 @@
 # Dropio Docs
 
-📦 **Dropio** is a modern, developer-friendly file upload and delivery platform designed to support everything from simple file transfers to advanced multi-part uploads with real-time progress tracking.
+**Dropio** is a modern file upload platform built specifically for developers in Indonesia.  
+Inspired by UploadThing, Dropio streamlines the process of uploading and managing files, allowing you to effortlessly integrate flexible upload capabilities into your web applications.
 
-This repository contains the official documentation for integrating Dropio into your project — from setup to customization.
+One of Dropio’s key advantages is its simplicity — it requires no external dependencies or additional installations. **Just copy and paste** the provided code into your project, and you're good to go.
 
 👉 View the live documentation: [docs.dropio.my.id](https://docs.dropio.my.id)
 
@@ -10,12 +11,18 @@ This repository contains the official documentation for integrating Dropio into 
 
 ## ✨ Key Features
 
-- 🚀 Upload files easily via a simple frontend or API
-- ☁️ Store files using local or object storage (S3-compatible)
-- 🔐 Protect uploads with token-based authentication
-- 📡 Track upload progress in real-time via WebSocket
-- 🗂️ Manage file metadata and statuses
-- 🧩 Seamlessly integrate with your existing frontend/backend stack
+- 🚀 Effortless file uploads via a simple frontend or API
+- 🔐 Secure uploads with token-based authentication
+- 📡 Real-time upload progress tracking
+- 🧩 Smooth integration with any frontend or backend stack
+
+---
+
+## 🔧 Upcoming Features
+
+- ⏸️ Support for pause and resume during uploads
+- 📁 Support for more of file types
+- 🗂️ Ability to upload multiple files simultaneously
 
 ---
 
@@ -29,5 +36,5 @@ This repository contains the official documentation for integrating Dropio into 
 
 Interested in early access or have any questions?
 
-- 🌐 Website: [dropio.dev](https://dropio.my.id)
-- 📧 Email: [contact@dropio.dev](mailto:contact@dropio.dev)
+- 🌐 Website: [dropio.my.id](https://dropio.my.id)
+- 📧 Email: [mail@weebzdev.my.id](mailto:mail@weebzdev.my.id)
