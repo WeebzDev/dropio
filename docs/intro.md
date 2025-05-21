@@ -20,12 +20,12 @@ To get started, create a new application on the [dropio.my.id](https://www.dropi
 
 #### Frontend
 
-- **[Next.js (App Router)](#)** — React + TypeScript / JavaScript
-- **[React & Vite](#)** — React + TypeScript / JavaScript
+- **[Next.js (App Router)](/docs/getting-started/frameworks/nextjs-app-router)** — React + TypeScript / JavaScript
+- **[React & Vite](/docs/getting-started/frameworks/react-vite)** — React + TypeScript / JavaScript
 
 #### Backend
 
-- **[Express](#)** — JavaScript / TypeScript
+- **[Express](/docs/getting-started/frameworks/express)** — JavaScript / TypeScript
 
 > We’re actively working to support more frameworks and library — stay tuned!  
 We also open source our framework templates. If you're interested, feel free to contribute by creating a template for your favorite framework.
