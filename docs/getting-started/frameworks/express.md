@@ -18,7 +18,6 @@ import TabItem from '@theme/TabItem';
 ```ts title="lib/dropio/server.ts"
 import { randomBytes, createHash, createHmac } from 'crypto';
 
-// 1. Define allowed MIME types for autocomplete support
 export type AllowedMimeTypes =
   | 'image/png'
   | 'image/jpeg'
@@ -35,9 +34,9 @@ export type AllowedMimeTypes =
   | 'video'
   | 'audio';
 
-type PowOf2 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
-type FileSize = `${PowOf2}${SizeUnit}`;
+type FileSize = `${OneToTen}${SizeUnit}`;
 
 type FileValidationOptions = Partial<
   Record<
@@ -53,6 +52,7 @@ export type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;
+  customeId: string;
 };
 
 type generatePresignURLOptions = {
@@ -122,7 +122,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
   error: boolean;
   message?: string;
 } {
-  const required: (keyof UploadMetadataRequest)[] = ['fileName', 'fileSize', 'fileType'];
+  const required: (keyof UploadMetadataRequest)[] = ['fileName', 'fileSize', 'fileType', 'customeId'];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
     return { error: true, message: `Missing fields: ${missing.join(', ')}` };
@@ -132,7 +132,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
 
 function generatePresignURL(options: generatePresignURLOptions): generatePresignURLResponse {
   const { data, ContentDiposition, expire, route } = options;
-  const { fileName, fileSize, fileType } = data;
+  const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
@@ -140,6 +140,7 @@ function generatePresignURL(options: generatePresignURLOptions): generatePresign
 
   const params = new URLSearchParams({
     expire: expires.toString(),
+    customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID!,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),
@@ -247,7 +248,6 @@ export class DIOApi {
 
 ```js title="lib/dropio/server.js"
 const { randomBytes, createHash, createHmac } = require('crypto');
-const { randomBytes, createHash, createHmac } = require('crypto');
 
 function parseSize(size) {
   if (typeof size === 'number') return size;
@@ -282,7 +282,7 @@ function formatBytes(bytes) {
 }
 
 function validateUploadMetadataRequest(query) {
-  const required = ['fileName', 'fileSize', 'fileType'];
+  const required = ['fileName', 'fileSize', 'fileType', 'customeId'];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
     return { error: true, message: `Missing fields: ${missing.join(', ')}` };
@@ -292,7 +292,7 @@ function validateUploadMetadataRequest(query) {
 
 function generatePresignURL(options) {
   const { data, ContentDiposition, expire, route } = options;
-  const { fileName, fileSize, fileType } = data;
+  const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
@@ -300,6 +300,7 @@ function generatePresignURL(options) {
 
   const params = new URLSearchParams({
     expire: expires.toString(),
+    customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),
@@ -444,6 +445,11 @@ app.use(express.json());
 
 app.post('/api/dropio', (req: express.Request, res: express.Response) => {
   const metadata = req.body as UploadMetadataRequest;
+
+  // Define your auth here
+  const yourAuth = 'fakeId';
+  metadata.customeId = yourAuth;
+
   const result = ourFileRouter.fileUploader(metadata);
   res.status(200).json(result);
 });
@@ -451,7 +457,6 @@ app.post('/api/dropio', (req: express.Request, res: express.Response) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
 ```
 
   </TabItem>
@@ -481,6 +486,11 @@ app.use(express.json());
 
 app.post('/api/dropio', (req, res) => {
   const metadata = req.body;
+
+  // Define your auth here
+  const yourAuth = 'fakeId';
+  metadata.customeId = yourAuth;
+
   const result = ourFileRouter.fileUploader(metadata);
   res.status(200).json(result);
 });
@@ -488,6 +498,7 @@ app.post('/api/dropio', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
 ```
 
   </TabItem>
