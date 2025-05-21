@@ -80,7 +80,7 @@ const config: Config = {
         },
         // { to: '/blog', label: 'Blog', position: 'left' },
         {
-          href: 'https://github.com/WeebzDev',
+          href: 'https://github.com/WeebzDev/dropio',
           label: 'GitHub',
           position: 'right',
         },
@@ -116,7 +116,7 @@ const config: Config = {
             // },
             {
               label: 'GitHub',
-              href: 'https://github.com/WeebzDev',
+              href: 'https://github.com/WeebzDev/dropio',
             },
           ],
         },
