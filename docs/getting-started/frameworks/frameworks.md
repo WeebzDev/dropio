@@ -8,7 +8,7 @@ Dropio is built to work seamlessly with fullstack frameworks, making integration
 
 #### Frontend
 
-- **[Next.js (App Router)](#)** — React + TypeScript / JavaScript
+- **[Next.js (App Router)](/docs/getting-started/frameworks/nextjs-app-router)** — React + TypeScript / JavaScript
 - **[React & Vite](#)** — React + TypeScript / JavaScript
 
 #### Backend
