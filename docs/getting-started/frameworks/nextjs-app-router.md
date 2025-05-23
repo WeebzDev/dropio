@@ -242,6 +242,7 @@ export class DIOApi {
 </details>
 
 :::warning[**Note on Supported File Types**]
+
 > The list of MIME types is not fully supported yet. At the moment, **only image files** are allowed. If you attempt to upload a non-image file, you will receive an error response like the following:
 
 ```ts
@@ -249,11 +250,12 @@ export class DIOApi {
   message: "Invalid file type. Only image files are allowed.",
   code: 400,
 ```
+
 :::
 
 :::warning[**Note on Supported Upload File Count**]
-> Additionally, only one file can be uploaded at a time.
-Support for multiple file uploads is planned in future updates.
+
+> Additionally, only one file can be uploaded at a time. Support for multiple file uploads is planned in future updates.
 :::
 
 #### Client Side Code
@@ -295,7 +297,7 @@ export type UploadedFileInfo = {
   fileUrl: string;
 };
 
-type UploadResult =
+export type UploadResult =
   | { isError: true; message: string }
   | {
       isError: false;
@@ -499,6 +501,95 @@ export const { DioUploader } = {
 
 ### Example
 
+<Tabs>
+  <TabItem value='tailwind' label='Tailwind' default>
+
+```tsx title="form.tsx"
+'use client';
+
+import { useState } from 'react';
+
+import { DioUploader } from '@/utils/dropio';
+import type { UploadResult } from '@/lib/dropio/client';
+
+export function Form() {
+  const [loading, setLoading] = useState<number>(0);
+  const [pending, setPending] = useState<boolean>(false);
+  const [resultData, setResultData] = useState<UploadResult | null>(null);
+
+  async function formAction(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const file = formData.get('image');
+
+    if (!(file instanceof File)) {
+      console.error('No file selected or invalid file input');
+      return;
+    }
+
+    const { result } = await DioUploader({
+      file,
+      onProgress(percent) {
+        setLoading(percent);
+        console.log(`Uploading: ${percent}%`);
+      },
+      onStatusChange(isPending) {
+        setPending(isPending);
+      },
+    });
+
+    if (!result.isError) {
+      setResultData(result);
+    } else {
+      setPending(false);
+      setLoading(0);
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={formAction} className='mx-auto max-w-md space-y-4 rounded-2xl bg-white p-6 shadow-md'>
+        <label className='block'>
+          <span className='text-sm font-medium text-gray-700'>Upload Image</span>
+          <input
+            type='file'
+            name='image'
+            accept='image/*'
+            className='mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100'
+          />
+        </label>
+
+        <button
+          type='submit'
+          disabled={pending}
+          className='w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-50'
+        >
+          Upload
+        </button>
+
+        <div className='space-y-1 text-sm text-gray-700'>
+          <p>
+            <span className='font-medium'>Loading:</span> {loading}
+          </p>
+          <p>
+            <span className='font-medium'>isPending:</span> {pending ? 'true' : 'false'}
+          </p>
+          <p>
+            <span className='font-medium'>Result:</span>{' '}
+            {resultData && !resultData.isError ? resultData.originalName : 'no data'}
+          </p>
+        </div>
+      </form>
+    </>
+  );
+}
+```
+
+  </TabItem>
+
+  <TabItem value='no-css' label='No Css'>
+
 ```tsx title="form.tsx"
 'use client';
 
@@ -556,3 +647,6 @@ export function Form() {
   );
 }
 ```
+
+  </TabItem>
+</Tabs>
