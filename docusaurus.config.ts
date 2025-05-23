@@ -80,6 +80,11 @@ const config: Config = {
         },
         // { to: '/blog', label: 'Blog', position: 'left' },
         {
+          to: 'https://dropio.my.id/dashboard',
+          label: 'Dashboard',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/WeebzDev/dropio',
           label: 'GitHub',
           position: 'right',
