@@ -34,11 +34,15 @@ export type AllowedMimeTypes =
   | 'video'
   | 'audio';
 
-type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
-type FileSize = `${OneToTen}${SizeUnit}`;
+export type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
+export type FileSize = `${OneToTen}${SizeUnit}`;
 
-type FileValidationOptions = Partial<
+export type ExpireInterval = 1 | 5 | 10 | 15 | 20 | 25 | 30 | 60;
+export type TimeType = 'm' | 'h';
+export type ExpireTime = `${ExpireInterval}${TimeType}`;
+
+export type FileValidationOptions = Partial<
   Record<
     AllowedMimeTypes | (string & {}),
     {
@@ -55,19 +59,18 @@ export type UploadMetadataRequest = {
   customeId: string;
 };
 
-type generatePresignURLOptions = {
-  data: UploadMetadataRequest;
-  expire?: number;
+export type generatePresignURLOptions = {
+  expire?: ExpireTime;
   ContentDiposition?: string;
   route?: string;
 };
 
-type generatePresignURLResponse = {
+export type generatePresignURLResponse = {
   presignUrl: string;
   key: string;
 };
 
-type ServerApiResponse<T> = {
+export type ServerApiResponse<T> = {
   status: 'success' | 'error';
   code: number;
   data: T | null;
@@ -75,7 +78,7 @@ type ServerApiResponse<T> = {
   errors?: { field: string | number; message: string }[] | null;
 };
 
-type responseDIOApi<T = undefined> = {
+export type responseDIOApi<T = undefined> = {
   success?: string | null;
   error?: string | null;
   data?: T | null;
@@ -112,6 +115,28 @@ function parseSize(size: string | number): number {
   return Math.floor(parseFloat(num) * multiplier);
 }
 
+function parseTime(time: ExpireTime): number {
+  const match = /^(\d{1,3})([mh])$/i.exec(time);
+  if (!match) {
+    throw new Error(`Invalid time format: ${time}`);
+  }
+
+  const num = parseInt(match[1]!, 10);
+  const unit = match[2]!.toLowerCase();
+
+  const units: Record<TimeType, number> = {
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+  };
+
+  const multiplier = units[unit as TimeType];
+  if (!multiplier) {
+    throw new Error(`Invalid time unit: ${unit}`);
+  }
+
+  return num * multiplier;
+}
+
 function formatBytes(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -130,16 +155,25 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
   return { error: false };
 }
 
-function generatePresignURL(options: generatePresignURLOptions): generatePresignURLResponse {
-  const { data, ContentDiposition, expire, route } = options;
+function generatePresignURL(
+  data: UploadMetadataRequest,
+  options: generatePresignURLOptions
+): generatePresignURLResponse {
+  const { ContentDiposition, expire, route } = options;
   const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
-  const expires = Date.now() + (expire ?? 1 * 60 * 60 * 1000);
+  let expireTime = 1 * 60 * 60 * 1000;
+
+  if (expire) {
+    expireTime = parseTime(expire);
+  }
+
+  const expireValue = Date.now() + expireTime;
 
   const params = new URLSearchParams({
-    expire: expires.toString(),
+    expire: expireValue.toString(),
     customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID!,
     xDioFileName: fileName,
@@ -162,14 +196,16 @@ function generatePresignURL(options: generatePresignURLOptions): generatePresign
   };
 }
 
-// ---- Upload Factory ----
 export function createDropio() {
   if (typeof window !== 'undefined') {
     throw new Error('createDropio can only be used in a server environment');
   }
 
   return function defineUploader(config: FileValidationOptions) {
-    return function handleUpload(data: UploadMetadataRequest): UploadMetadataResponse {
+    return function handleUpload(
+      data: UploadMetadataRequest,
+      options: generatePresignURLOptions
+    ): UploadMetadataResponse {
       const dataFileType = data.fileType.split('/')[0] ?? '';
       const fileConfig = config[data.fileType] ?? config[dataFileType];
 
@@ -188,7 +224,7 @@ export function createDropio() {
         };
       }
 
-      const presigned = generatePresignURL({ data });
+      const presigned = generatePresignURL(data, options);
       return {
         isError: false,
         key: presigned.key,
@@ -264,25 +300,23 @@ export class DIOApi {
   <summary>Click to expand code</summary>
 
 ```ts title="lib/dropio/client.ts"
-// ==== Types ====
-
-type UploaderOptions = {
+export type UploaderOptions = {
   customServerUrl?: string;
 };
 
-type UploadMetadataRequest = {
+export type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;
 };
 
-type UploadRequest = {
+export type UploadRequest = {
   file: File;
   onProgress?: (percent: number) => void;
   onStatusChange?: (isPending: boolean) => void;
 };
 
-type ApiResponse<T> = {
+export type ApiResponse<T> = {
   status: 'success' | 'error';
   code: number;
   data: T | null;
@@ -307,11 +341,9 @@ export type UploadResult =
       fileUrl: string;
     };
 
-type UploadMetadataResponse =
+export type UploadMetadataResponse =
   | { isError: false; presignedUrl: string; key: string }
   | { isError: true; message: string };
-
-// ==== Main Entry ====
 
 export function createUploader() {
   return function configureUploader(options: UploaderOptions) {
@@ -353,8 +385,6 @@ export function createUploader() {
     };
   };
 }
-
-// ==== Helpers ====
 
 async function getPresignedUrl(file: File, serverUrl?: string): Promise<{ isError: boolean; result: string }> {
   const requestPayload: UploadMetadataRequest = {
@@ -455,9 +485,13 @@ DROPIO_INGEST_SERVER=
 ### Set Up A FileRouter
 
 ```ts title="app/api/dropio/route.ts"
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { createDropio, type UploadMetadataRequest, type UploadMetadataResponse } from '@/lib/dropio/server';
+import {
+  createDropio,
+  type UploadMetadataRequest,
+  type UploadMetadataResponse,
+} from "@/lib/dropio/server";
 
 const dio = createDropio();
 
@@ -465,24 +499,29 @@ export const ourFileRouter = {
   fileUploader: dio({
     image: {
       maxFileCount: 1,
-      maxFileSize: '10MB',
+      maxFileSize: "10MB",
     },
   }),
 };
 
-export async function POST(req: Request): Promise<NextResponse<UploadMetadataResponse>> {
+export async function POST(
+  req: Request,
+): Promise<NextResponse<UploadMetadataResponse>> {
   const metadata = (await req.json()) as UploadMetadataRequest;
 
   // Define your auth here
-  const yourAuth = 'fakeId';
+  const yourAuth = "fakeId";
   metadata.customeId = yourAuth;
 
-  const result = ourFileRouter.fileUploader(metadata);
+  const result = ourFileRouter.fileUploader(metadata, {
+    expire: "1h", // 1 Hour
+  });
 
   return NextResponse.json(result, {
     status: result.isError ? 400 : 200,
   });
 }
+
 ```
 
 ### Create The Dropio Components
