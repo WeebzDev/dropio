@@ -26,7 +26,9 @@ app.post('/api/dropio', (req, res) => {
   const yourAuth = 'fakeId';
   metadata.customeId = yourAuth;
 
-  const result = ourFileRouter.fileUploader(metadata);
+  const result = ourFileRouter.fileUploader(metadata, {
+    expire: '1h', // 1 Hour
+  });
   res.status(200).json(result);
 });
 
