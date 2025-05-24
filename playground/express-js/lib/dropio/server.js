@@ -26,6 +26,28 @@ function parseSize(size) {
   return Math.floor(parseFloat(num) * multiplier);
 }
 
+function parseTime(time) {
+  const match = /^(\d{1,3})([mh])$/i.exec(time);
+  if (!match) {
+    throw new Error(`Invalid time format: ${time}`);
+  }
+
+  const num = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  const units = {
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+  };
+
+  const multiplier = units[unit];
+  if (!multiplier) {
+    throw new Error(`Invalid time unit: ${unit}`);
+  }
+
+  return num * multiplier;
+}
+
 function formatBytes(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -41,16 +63,22 @@ function validateUploadMetadataRequest(query) {
   return { error: false };
 }
 
-function generatePresignURL(options) {
-  const { data, ContentDiposition, expire, route } = options;
+function generatePresignURL(data, options) {
+  const { ContentDiposition, expire, route } = options;
   const { fileName, fileSize, fileType, customeId } = data;
 
   const baseUrl = createHash('sha256').update(randomBytes(18).toString('hex')).digest('hex').toUpperCase().slice(0, 24);
 
-  const expires = Date.now() + (expire ?? 1 * 60 * 60 * 1000);
+  let expireTime = 1 * 60 * 60 * 1000;
+
+  if (expire) {
+    expireTime = parseTime(expire);
+  }
+
+  const expireValue = Date.now() + expireTime;
 
   const params = new URLSearchParams({
-    expire: expires.toString(),
+    expire: expireValue.toString(),
     customeId: customeId,
     xDioIdentifier: process.env.DROPIO_APP_ID,
     xDioFileName: fileName,
@@ -79,7 +107,7 @@ function createDropio() {
   }
 
   return function defineUploader(config) {
-    return function handleUpload(data) {
+    return function handleUpload(data, options) {
       const dataFileType = data.fileType.split('/')[0] ?? '';
       const fileConfig = config[data.fileType] ?? config[dataFileType];
 
@@ -98,7 +126,7 @@ function createDropio() {
         };
       }
 
-      const presigned = generatePresignURL({ data });
+      const presigned = generatePresignURL(data, options);
       return {
         isError: false,
         key: presigned.key,

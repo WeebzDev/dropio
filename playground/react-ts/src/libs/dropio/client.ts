@@ -1,26 +1,20 @@
-// ==== Types ====
-
-type UploaderOptions = {
+export type UploaderOptions = {
   customServerUrl?: string;
 };
 
-type UploadRequest = {
-  file: File;
-  onProgress?: (percent: number) => void;
-  onStatusChange?: (isPending: boolean) => void;
-};
-
-type UploadMetadataRequest = {
+export type UploadMetadataRequest = {
   fileName: string;
   fileSize: number;
   fileType: string;
 };
 
-type UploadMetadataResponse =
-  | { isError: false; presignedUrl: string; key: string }
-  | { isError: true; message: string };
+export type UploadRequest = {
+  file: File;
+  onProgress?: (percent: number) => void;
+  onStatusChange?: (isPending: boolean) => void;
+};
 
-type ApiResponse<T> = {
+export type ApiResponse<T> = {
   status: 'success' | 'error';
   code: number;
   data: T | null;
@@ -45,7 +39,9 @@ export type UploadResult =
       fileUrl: string;
     };
 
-// ==== Main Entry ====
+export type UploadMetadataResponse =
+  | { isError: false; presignedUrl: string; key: string }
+  | { isError: true; message: string };
 
 export function createUploader() {
   return function configureUploader(options: UploaderOptions) {
@@ -87,8 +83,6 @@ export function createUploader() {
     };
   };
 }
-
-// ==== Helpers ====
 
 async function getPresignedUrl(file: File, serverUrl?: string): Promise<{ isError: boolean; result: string }> {
   const requestPayload: UploadMetadataRequest = {
