@@ -309,6 +309,12 @@ function uploadFileToIngestServer({ file, presignedUrl, onProgress }) {
   </TabItem>
 </Tabs>
 
+### Add env variables
+
+```env title=".env"
+DROPIO_INGEST_SERVER='https://ingest.dropio.my.id'
+```
+
 ### Create The Dropio Components
 
 <Tabs groupId="reactviteGroup">
