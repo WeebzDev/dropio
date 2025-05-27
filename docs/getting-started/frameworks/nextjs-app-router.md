@@ -292,6 +292,7 @@ export class DIOApi {
 :::warning[**Note on Supported Upload File Count**]
 
 > Additionally, only one file can be uploaded at a time. Support for multiple file uploads is planned in future updates.
+
 :::
 
 #### Client Side Code
@@ -484,14 +485,8 @@ DROPIO_INGEST_SERVER=
 
 ### Set Up A FileRouter
 
-```ts title="app/api/dropio/route.ts"
-import { NextResponse } from "next/server";
-
-import {
-  createDropio,
-  type UploadMetadataRequest,
-  type UploadMetadataResponse,
-} from "@/lib/dropio/server";
+```ts title="app/api/dropio/core.ts"
+import { createDropio } from '@/lib/dropio/server';
 
 const dio = createDropio();
 
@@ -499,29 +494,33 @@ export const ourFileRouter = {
   fileUploader: dio({
     image: {
       maxFileCount: 1,
-      maxFileSize: "10MB",
+      maxFileSize: '10MB',
     },
   }),
 };
+```
 
-export async function POST(
-  req: Request,
-): Promise<NextResponse<UploadMetadataResponse>> {
+```ts title="app/api/dropio/route.ts"
+import { NextResponse } from 'next/server';
+
+import { type UploadMetadataRequest, type UploadMetadataResponse } from '@/lib/dropio/server';
+import { ourFileRouter } from './core';
+
+export async function POST(req: Request): Promise<NextResponse<UploadMetadataResponse>> {
   const metadata = (await req.json()) as UploadMetadataRequest;
 
   // Define your auth here
-  const yourAuth = "fakeId";
+  const yourAuth = 'fakeId';
   metadata.customeId = yourAuth;
 
   const result = ourFileRouter.fileUploader(metadata, {
-    expire: "1h", // 1 Hour
+    expire: '1h', // 1 Hour
   });
 
   return NextResponse.json(result, {
     status: result.isError ? 400 : 200,
   });
 }
-
 ```
 
 ### Create The Dropio Components
