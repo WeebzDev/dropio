@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DioUploader } from './utils/dropio';
 import type { UploadResult } from './libs/dropio/client';
 import './App.css';
@@ -7,6 +7,8 @@ function App() {
   const [loading, setLoading] = useState<number>(0);
   const [pending, setPending] = useState<boolean>(false);
   const [resultData, setResultData] = useState<UploadResult | null>(null);
+
+  const abortRef = useRef<() => void>(() => {});
 
   async function formAction(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,6 +30,9 @@ function App() {
       onStatusChange(isPending) {
         setPending(isPending);
       },
+      setAbortHandler(abortFn) {
+        abortRef.current = abortFn;
+      },
     });
 
     if (!result.isError) {
@@ -38,12 +43,23 @@ function App() {
     }
   }
 
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current();
+      setPending(false);
+      setLoading(0);
+    }
+  };
+
   return (
     <>
       <form onSubmit={formAction}>
         <input type='file' name='image' accept='image/*' />
         <button type='submit' disabled={pending}>
           Upload
+        </button>
+        <button type='button' onClick={handleCancel}>
+          Cancel
         </button>
         <p>Loading : {loading}</p>
         <p>isPending : {pending ? 'true' : 'false'}</p>
@@ -54,4 +70,3 @@ function App() {
 }
 
 export default App;
-

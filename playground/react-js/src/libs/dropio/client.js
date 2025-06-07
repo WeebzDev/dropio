@@ -5,7 +5,7 @@ export function createUploader() {
         throw new Error('createUploader can only be used in a browser environment');
       }
 
-      const { file, onProgress, onStatusChange } = request;
+      const { file, onProgress, onStatusChange, setAbortHandler } = request;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(true);
@@ -15,7 +15,6 @@ export function createUploader() {
       if (presignedUrlResult.isError) {
         return {
           result: { isError: true, message: presignedUrlResult.result },
-          abort: () => {},
         };
       }
 
@@ -25,13 +24,17 @@ export function createUploader() {
         onProgress,
       });
 
+      if (typeof setAbortHandler === 'function') {
+        setAbortHandler(abort);
+      }
+
       const uploadResult = await uploadPromise;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(false);
       }
 
-      return { result: uploadResult, abort };
+      return { result: uploadResult };
     };
   };
 }
@@ -95,6 +98,13 @@ function uploadFileToIngestServer({ file, presignedUrl, onProgress }) {
 
     xhr.onerror = () => {
       resolve({ isError: true, message: 'Upload failed due to network error' });
+    };
+
+    xhr.onabort = () => {
+      resolve({
+        isError: true,
+        message: 'The upload was cancelled',
+      });
     };
 
     const formData = new FormData();
