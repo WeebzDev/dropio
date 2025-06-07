@@ -30,6 +30,7 @@ export type UploadRequest = {
   file: File;
   onProgress?: (percent: number) => void;
   onStatusChange?: (isPending: boolean) => void;
+  setAbortHandler?: (abortFn: () => void) => void;
 };
 
 export type ApiResponse<T> = {
@@ -65,13 +66,12 @@ export function createUploader() {
   return function configureUploader(options: UploaderOptions) {
     return async function handleFileUpload(request: UploadRequest): Promise<{
       result: UploadResult;
-      abort: () => void;
     }> {
       if (typeof window === 'undefined') {
         throw new Error('createUploader can only be used in a browser environment');
       }
 
-      const { file, onProgress, onStatusChange } = request;
+      const { file, onProgress, onStatusChange, setAbortHandler } = request;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(true);
@@ -81,7 +81,6 @@ export function createUploader() {
       if (presignedUrlResult.isError) {
         return {
           result: { isError: true, message: presignedUrlResult.result },
-          abort: () => {},
         };
       }
 
@@ -91,13 +90,17 @@ export function createUploader() {
         onProgress,
       });
 
+      if (typeof setAbortHandler === 'function') {
+        setAbortHandler(abort);
+      }
+
       const uploadResult = await uploadPromise;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(false);
       }
 
-      return { result: uploadResult, abort };
+      return { result: uploadResult };
     };
   };
 }
@@ -174,6 +177,13 @@ function uploadFileToIngestServer({
       resolve({ isError: true, message: 'Upload failed due to network error' });
     };
 
+    xhr.onabort = () => {
+      resolve({
+        isError: true,
+        message: 'The upload was cancelled',
+      });
+    };
+
     const formData = new FormData();
     formData.append('file', file);
     xhr.send(formData);
@@ -201,7 +211,7 @@ export function createUploader() {
         throw new Error('createUploader can only be used in a browser environment');
       }
 
-      const { file, onProgress, onStatusChange } = request;
+      const { file, onProgress, onStatusChange, setAbortHandler } = request;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(true);
@@ -211,7 +221,6 @@ export function createUploader() {
       if (presignedUrlResult.isError) {
         return {
           result: { isError: true, message: presignedUrlResult.result },
-          abort: () => {},
         };
       }
 
@@ -221,13 +230,17 @@ export function createUploader() {
         onProgress,
       });
 
+      if (typeof setAbortHandler === 'function') {
+        setAbortHandler(abort);
+      }
+
       const uploadResult = await uploadPromise;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(false);
       }
 
-      return { result: uploadResult, abort };
+      return { result: uploadResult };
     };
   };
 }
@@ -291,6 +304,13 @@ function uploadFileToIngestServer({ file, presignedUrl, onProgress }) {
 
     xhr.onerror = () => {
       resolve({ isError: true, message: 'Upload failed due to network error' });
+    };
+
+    xhr.onabort = () => {
+      resolve({
+        isError: true,
+        message: 'The upload was cancelled',
+      });
     };
 
     const formData = new FormData();
@@ -357,7 +377,7 @@ export const { DioUploader } = {
   <TabItem value='typescript' label='Typescript' default>
 
 ```tsx title="app.tsx"
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DioUploader } from '@/utils/dropio';
 import type { UploadResult } from '@/libs/dropio/client';
 import '@/App.css';
@@ -366,6 +386,8 @@ function App() {
   const [loading, setLoading] = useState<number>(0);
   const [pending, setPending] = useState<boolean>(false);
   const [resultData, setResultData] = useState<UploadResult | null>(null);
+
+  const abortRef = useRef<() => void>(() => {});
 
   async function formAction(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -387,6 +409,9 @@ function App() {
       onStatusChange(isPending) {
         setPending(isPending);
       },
+      setAbortHandler(abortFn) {
+        abortRef.current = abortFn;
+      },
     });
 
     if (!result.isError) {
@@ -397,12 +422,23 @@ function App() {
     }
   }
 
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current();
+      setPending(false);
+      setLoading(0);
+    }
+  };
+
   return (
     <>
       <form onSubmit={formAction}>
         <input type='file' name='image' accept='image/*' />
         <button type='submit' disabled={pending}>
           Upload
+        </button>
+        <button type='button' onClick={handleCancel}>
+          Cancel
         </button>
         <p>Loading : {loading}</p>
         <p>isPending : {pending ? 'true' : 'false'}</p>
@@ -420,7 +456,7 @@ export default App;
   <TabItem value='javascript' label='Javascript'>
 
 ```jsx title="app.jsx"
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DioUploader } from '@/utils/dropio';
 import '@/App.css';
 
@@ -428,6 +464,8 @@ function App() {
   const [loading, setLoading] = useState(0);
   const [pending, setPending] = useState(false);
   const [resultData, setResultData] = useState(null);
+
+  const abortRef = useRef(() => {});
 
   async function formAction(e) {
     e.preventDefault();
@@ -449,6 +487,9 @@ function App() {
       onStatusChange(isPending) {
         setPending(isPending);
       },
+      setAbortHandler(abortFn) {
+        abortRef.current = abortFn;
+      },
     });
 
     if (!result.isError) {
@@ -459,12 +500,23 @@ function App() {
     }
   }
 
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current();
+      setPending(false);
+      setLoading(0);
+    }
+  };
+
   return (
     <>
       <form onSubmit={formAction}>
         <input type='file' name='image' accept='image/*' />
         <button type='submit' disabled={pending}>
           Upload
+        </button>
+        <button type='button' onClick={handleCancel}>
+          Cancel
         </button>
         <p>Loading : {loading}</p>
         <p>isPending : {pending ? 'true' : 'false'}</p>

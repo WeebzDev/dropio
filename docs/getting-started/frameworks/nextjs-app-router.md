@@ -315,6 +315,7 @@ export type UploadRequest = {
   file: File;
   onProgress?: (percent: number) => void;
   onStatusChange?: (isPending: boolean) => void;
+  setAbortHandler?: (abortFn: () => void) => void;
 };
 
 export type ApiResponse<T> = {
@@ -350,13 +351,12 @@ export function createUploader() {
   return function configureUploader(options: UploaderOptions) {
     return async function handleFileUpload(request: UploadRequest): Promise<{
       result: UploadResult;
-      abort: () => void;
     }> {
       if (typeof window === 'undefined') {
         throw new Error('createUploader can only be used in a browser environment');
       }
 
-      const { file, onProgress, onStatusChange } = request;
+      const { file, onProgress, onStatusChange, setAbortHandler } = request;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(true);
@@ -366,7 +366,6 @@ export function createUploader() {
       if (presignedUrlResult.isError) {
         return {
           result: { isError: true, message: presignedUrlResult.result },
-          abort: () => {},
         };
       }
 
@@ -376,13 +375,17 @@ export function createUploader() {
         onProgress,
       });
 
+      if (typeof setAbortHandler === 'function') {
+        setAbortHandler(abort);
+      }
+
       const uploadResult = await uploadPromise;
 
       if (typeof onStatusChange === 'function') {
         onStatusChange(false);
       }
 
-      return { result: uploadResult, abort };
+      return { result: uploadResult };
     };
   };
 }
@@ -457,6 +460,13 @@ function uploadFileToIngestServer({
 
     xhr.onerror = () => {
       resolve({ isError: true, message: 'Upload failed due to network error' });
+    };
+
+    xhr.onabort = () => {
+      resolve({
+        isError: true,
+        message: 'The upload was cancelled',
+      });
     };
 
     const formData = new FormData();
@@ -545,7 +555,7 @@ export const { DioUploader } = {
 ```tsx title="form.tsx"
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import { DioUploader } from '@/utils/dropio';
 import type { UploadResult } from '@/lib/dropio/client';
@@ -554,6 +564,9 @@ export function Form() {
   const [loading, setLoading] = useState<number>(0);
   const [pending, setPending] = useState<boolean>(false);
   const [resultData, setResultData] = useState<UploadResult | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const abortRef = useRef<() => void>(() => {});
 
   async function formAction(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -575,15 +588,27 @@ export function Form() {
       onStatusChange(isPending) {
         setPending(isPending);
       },
+      setAbortHandler(abortFn) {
+        abortRef.current = abortFn;
+      },
     });
 
     if (!result.isError) {
       setResultData(result);
     } else {
+      setMessage(result.message);
       setPending(false);
       setLoading(0);
     }
   }
+
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current();
+      setPending(false);
+      setLoading(0);
+    }
+  };
 
   return (
     <>
@@ -604,6 +629,14 @@ export function Form() {
           className='w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-50'
         >
           Upload
+        </button>
+
+        <button
+          type='button'
+          onClick={handleCancel}
+          className='w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-50'
+        >
+          Cancel
         </button>
 
         <div className='space-y-1 text-sm text-gray-700'>
@@ -631,7 +664,7 @@ export function Form() {
 ```tsx title="form.tsx"
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import { DioUploader } from '@/utils/dropio';
 
@@ -639,6 +672,9 @@ export function Form() {
   const [loading, setLoading] = useState<number>(0);
   const [pending, setPending] = useState<boolean>(false);
   const [resultData, setResultData] = useState<UploadResult | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const abortRef = useRef<() => void>(() => {});
 
   async function formAction(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -660,15 +696,27 @@ export function Form() {
       onStatusChange(isPending) {
         setPending(isPending);
       },
+      setAbortHandler(abortFn) {
+        abortRef.current = abortFn;
+      },
     });
 
     if (!result.isError) {
       setResultData(result);
     } else {
+      setMessage(result.message);
       setPending(false);
       setLoading(0);
     }
   }
+
+  const handleCancel = () => {
+    if (abortRef.current) {
+      abortRef.current();
+      setPending(false);
+      setLoading(0);
+    }
+  };
 
   return (
     <>
@@ -676,6 +724,9 @@ export function Form() {
         <input type='file' name='image' accept='image/*' />
         <button type='submit' disabled={pending}>
           Upload
+        </button>
+        <button type='button' onClick={handleCancel}>
+          Cancel
         </button>
         <p>Loading : {loading}</p>
         <p>isPending : {pending ? 'true' : 'false'}</p>
