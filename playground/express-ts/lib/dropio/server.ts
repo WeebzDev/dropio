@@ -217,18 +217,18 @@ export function createDropio() {
 }
 
 export class DIOApi {
-  async delete(fileKey: string): Promise<responseDIOApi<null>> {
+  async delete(fileKeys: string[]): Promise<responseDIOApi<null>> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/d/${fileKey}`, {
+      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER!}/d/${process.env.DROPIO_APP_ID!}`, {
         method: 'DELETE',
         cache: 'no-store',
         headers: {
           Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
-          'xdio-app-id': process.env.DROPIO_APP_ID!,
         },
+        body: JSON.stringify({ fileKeys: fileKeys }),
         signal: controller.signal,
       });
 
@@ -255,4 +255,5 @@ export class DIOApi {
     }
   }
 }
+
 
