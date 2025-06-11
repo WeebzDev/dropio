@@ -5,7 +5,7 @@ title: Introduction
 
 # Welcome to Dropio
 
-**Dropio** is a modern file upload platform built specifically for developers in Indonesia.  
+**Dropio** (dro—pio not drop—io) is a modern file upload platform built specifically for developers in Indonesia.  
 Inspired by UploadThing, Dropio streamlines the process of uploading and managing files, allowing you to effortlessly integrate flexible upload capabilities into your web applications.
 
 One of Dropio’s key advantages is its simplicity — it requires no external dependencies or additional installations. **Just copy and paste** the provided code into your project, and you're good to go.
