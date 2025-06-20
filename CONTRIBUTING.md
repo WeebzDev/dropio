@@ -36,3 +36,6 @@ Follow existing code style and naming conventions.
 Write clear and concise commit messages.
 
 Lint and format your code before pushing.
+
+## 📝 Additional Notes
+You can see in folder template and playground for reference.
