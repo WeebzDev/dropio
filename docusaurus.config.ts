@@ -69,7 +69,7 @@ const config: Config = {
       title: 'Dropio',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/dropio.png',
+        src: 'img/dio-logo.webp',
       },
       items: [
         {
