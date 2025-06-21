@@ -597,7 +597,7 @@ export function Form() {
     if (!result.isError) {
       setResultData(result);
     } else {
-      setMessage(result.message);
+      setResultData(result);
       setPending(false);
       setLoading(0);
     }
@@ -705,7 +705,7 @@ export function Form() {
     if (!result.isError) {
       setResultData(result);
     } else {
-      setMessage(result.message);
+      setResultData(result);
       setPending(false);
       setLoading(0);
     }
