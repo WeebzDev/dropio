@@ -1,6 +1,7 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { siteConfig } from './config';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -146,6 +147,35 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
+    metadata: [
+      {
+        name: 'keywords',
+        content:
+          'dropio, docs, dokumentasi, file upload, file sharing, upload file online, secure file upload, uploadthing alternative, request room, file request, file submission, team file manager, collaborative file sharing, upload manager, file status tracking, drag and drop upload, share files with team, online file storage, kirim file online, dropio indonesia',
+      },
+      { name: 'description', content: siteConfig.longDescription },
+      { name: 'author', content: 'WeebzDev' },
+      { name: 'creator', content: 'WeebzDev' },
+
+      // Open Graph metadata
+      { property: 'og:type', content: 'website' },
+      { property: 'og:locale', content: 'en_US' },
+      { property: 'og:url', content: siteConfig.url },
+      { property: 'og:title', content: siteConfig.name },
+      { property: 'og:description', content: siteConfig.longDescription },
+      { property: 'og:site_name', content: siteConfig.name },
+      { property: 'og:image', content: `img/og.webp` },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: 'Dropio Application Preview' },
+
+      // Twitter metadata
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: siteConfig.name },
+      { name: 'twitter:description', content: siteConfig.longDescription },
+      { name: 'twitter:image', content: `img/og.webp` },
+      { name: 'twitter:creator', content: '@WeebzDev' },
+    ],
   } satisfies Preset.ThemeConfig,
 };
 
