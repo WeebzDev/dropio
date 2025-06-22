@@ -5,7 +5,7 @@ title: DIOAPI
 
 # DIOApi
 
-**Dropio API Helper** — for **server-side** usage only. It functions like a standard REST API, allowing you to handle uploads securely from your backend.
+**Dropio API Helper** — hanya untuk penggunaan **server-side**. Berfungsi seperti REST API standar, memungkinkan Anda menangani proses unggah dengan aman dari sisi backend.
 
 ### Constructor
 
@@ -13,15 +13,17 @@ title: DIOAPI
 import { DIOApi } from '@/lib/dropio/server';
 
 const dioapi = new DIOApi();
+
 ```
 
-### Delete files
+### Menghapus file
 
-`deleteFiles` accepts either a single `fileKey` or an array of `fileKeys`, and removes the corresponding files from the server storage.
+`deleteFiles` menerima satu `fileKey` atau array berisi beberapa `fileKeys`, dan akan menghapus file-file terkait dari penyimpanan server.
 
 ```ts
 import { dioapi } from '@/server/dropio';
 
 await dioapi.delete(['IMAGE-KEY.jpg']);
 await dioapi.delete(['IMAGE-KEY-1.jpg', 'IMAGE-KEY-2.jpg']);
+
 ```

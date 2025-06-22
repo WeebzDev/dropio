@@ -1,0 +1,30 @@
+{
+  "link.title.Documentation": {
+    "message": "Dokumentasi",
+    "description": "The title of the footer links column with title=Documentation in the footer"
+  },
+  "link.title.Need Help?": {
+    "message": "Butuh Bantuan?",
+    "description": "The title of the footer links column with title=Need Help? in the footer"
+  },
+  "link.title.More": {
+    "message": "Lainnya",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.Introduction": {
+    "message": "Introduction",
+    "description": "The label of footer link with label=Introduction linking to /docs/intro"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gg/DCX5NZdsXn"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/WeebzDev/dropio"
+  },
+  "copyright": {
+    "message": "Copyright © 2025 WeebzDev, Inc. Built with Docusaurus.",
+    "description": "The footer copyright"
+  }
+}

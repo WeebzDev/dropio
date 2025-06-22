@@ -63,7 +63,7 @@ Your server responds with the presigned URL.
 
 Client uploads the file directly to Dropio using the presigned URL.
 
-### Dropio → S3 (or compatible)
+### Dropio → Cloud
 
 Dropio securely forwards the file to the object storage provider.
 

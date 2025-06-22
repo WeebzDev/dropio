@@ -28,7 +28,17 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'id'],
+    localeConfigs: {
+      en: {
+        label: 'English',
+        htmlLang: 'en',
+      },
+      id: {
+        label: 'Bahasa Indonesia',
+        htmlLang: 'id',
+      },
+    },
   },
 
   presets: [
@@ -89,6 +99,10 @@ const config: Config = {
           label: 'GitHub',
           position: 'right',
         },
+        {
+          type: 'localeDropdown',
+          position: 'right',
+        },
       ],
     },
     footer: {
@@ -134,5 +148,7 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
 };
+
+console.log('Locales:', config.i18n.locales);
 
 export default config;
