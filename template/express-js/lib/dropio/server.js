@@ -202,7 +202,7 @@ class DIOApi {
         return { error: response?.message };
       }
 
-      return { success: response?.message };
+      return { data: response?.data };
     } catch (error) {
       console.error('Error get bucket details:', error);
       return { error: 'Error During get bucket details' };
