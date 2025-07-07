@@ -251,6 +251,7 @@ export class DIOApi {
         method: 'DELETE',
         cache: 'no-store',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
         },
         body: JSON.stringify({ fileKeys: fileKeys }),

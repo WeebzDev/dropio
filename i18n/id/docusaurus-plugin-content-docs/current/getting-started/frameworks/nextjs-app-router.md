@@ -288,6 +288,7 @@ export class DIOApi {
         method: 'GET',
         cache: 'no-store',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
         },
         signal: controller.signal,
