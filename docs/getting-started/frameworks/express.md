@@ -272,7 +272,44 @@ export class DIOApi {
       clearTimeout(timeoutId);
     }
   }
+  async bucketDetails(): Promise<responseDIOApi<null>> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID!}`, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
+        },
+        signal: controller.signal,
+      });
+
+      let response: ServerApiResponse<null> | null = null;
+
+      try {
+        response = (await res.json()) as ServerApiResponse<null>;
+      } catch (jsonError) {
+        console.error('Failed to parse JSON from get bucket details dioapi:', jsonError);
+        return { error: 'Failed to parse JSON from get bucket details' };
+      }
+
+      if (response?.code !== 200) {
+        console.log('INGEST_SERVER_ERORR:', response.errors);
+        return { error: response?.message };
+      }
+
+      return { success: response?.message };
+    } catch (error) {
+      console.error('Error get bucket details:', error);
+      return { error: 'Error During get bucket details' };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 }
+
 
 ```
 
@@ -460,10 +497,47 @@ class DIOApi {
       clearTimeout(timeoutId);
     }
   }
+  async bucketDetails() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID}`, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          Authorization: `Bearer ${process.env.DROPIO_TOKEN}`,
+        },
+        signal: controller.signal,
+      });
+
+      let response = null;
+
+      try {
+        response = await res.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON from get bucket details dioapi:', jsonError);
+        return { error: 'Failed to parse JSON from get bucket details' };
+      }
+
+      if (response?.code !== 200) {
+        console.log('INGEST_SERVER_ERORR:', response.errors);
+        return { error: response?.message };
+      }
+
+      return { success: response?.message };
+    } catch (error) {
+      console.error('Error get bucket details:', error);
+      return { error: 'Error During get bucket details' };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 }
 
 exports.createDropio = createDropio;
 exports.DIOApi = DIOApi;
+
 
 
 ```
