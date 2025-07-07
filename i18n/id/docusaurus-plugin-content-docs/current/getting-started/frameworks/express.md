@@ -89,6 +89,13 @@ export type UploadMetadataResponse =
   | { isError: false; presignedUrl: string; key: string }
   | { isError: true; message: string };
 
+export type BucketDetailsType = {
+  appId: string;
+  name: string;
+  quota: number;
+  quotaUsage: number;
+};
+
 function parseSize(size: string | number): number {
   if (typeof size === 'number') return size;
 
@@ -272,7 +279,7 @@ export class DIOApi {
       clearTimeout(timeoutId);
     }
   }
-  async bucketDetails(): Promise<responseDIOApi<null>> {
+  async bucketDetails(): Promise<responseDIOApi<BucketDetailsType>> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
@@ -286,10 +293,10 @@ export class DIOApi {
         signal: controller.signal,
       });
 
-      let response: ServerApiResponse<null> | null = null;
+      let response: ServerApiResponse<BucketDetailsType> | null = null;
 
       try {
-        response = (await res.json()) as ServerApiResponse<null>;
+        response = (await res.json()) as ServerApiResponse<BucketDetailsType>;
       } catch (jsonError) {
         console.error('Failed to parse JSON from get bucket details dioapi:', jsonError);
         return { error: 'Failed to parse JSON from get bucket details' };
@@ -300,7 +307,7 @@ export class DIOApi {
         return { error: response?.message };
       }
 
-      return { success: response?.message };
+      return { data: response?.data };
     } catch (error) {
       console.error('Error get bucket details:', error);
       return { error: 'Error During get bucket details' };
@@ -309,6 +316,7 @@ export class DIOApi {
     }
   }
 }
+
 
 
 ```
@@ -321,83 +329,12 @@ export class DIOApi {
     <summary>Klik untuk membuka kode</summary>
 
 ```js title="lib/dropio/server.js"
-import { randomBytes, createHash, createHmac } from 'crypto';
+const { randomBytes, createHash, createHmac } = require('crypto');
 
-export type AllowedMimeTypes =
-  | 'image/png'
-  | 'image/jpeg'
-  | 'image/webp'
-  | 'image/gif'
-  | 'image/svg+xml'
-  | 'video/mp4'
-  | 'video/webm'
-  | 'video/ogg'
-  | 'audio/mpeg'
-  | 'audio/wav'
-  | 'text/plain'
-  | 'image'
-  | 'video'
-  | 'audio';
-
-export type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-export type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
-export type FileSize = `${OneToTen}${SizeUnit}`;
-
-export type ExpireInterval = 1 | 5 | 10 | 15 | 20 | 25 | 30 | 60;
-export type TimeType = 'm' | 'h';
-export type ExpireTime = `${ExpireInterval}${TimeType}`;
-
-export type FileValidationOptions = Partial<
-  Record<
-    AllowedMimeTypes | (string & {}),
-    {
-      maxFileSize?: FileSize | number;
-      maxFileCount?: number;
-    }
-  >
->;
-
-export type UploadMetadataRequest = {
-  fileName: string;
-  fileSize: number;
-  fileType: string;
-  customeId: string;
-};
-
-export type generatePresignURLOptions = {
-  expire?: ExpireTime;
-  ContentDiposition?: string;
-  route?: string;
-};
-
-export type generatePresignURLResponse = {
-  presignUrl: string;
-  key: string;
-};
-
-export type ServerApiResponse<T> = {
-  status: 'success' | 'error';
-  code: number;
-  data: T | null;
-  message: string | null;
-  errors?: { field: string | number; message: string }[] | null;
-};
-
-export type responseDIOApi<T = undefined> = {
-  success?: string | null;
-  error?: string | null;
-  data?: T | null;
-  message?: string | null;
-};
-
-export type UploadMetadataResponse =
-  | { isError: false; presignedUrl: string; key: string }
-  | { isError: true; message: string };
-
-function parseSize(size: string | number): number {
+function parseSize(size) {
   if (typeof size === 'number') return size;
 
-  const units: Record<string, number> = {
+  const units = {
     B: 1,
     KB: 1024,
     MB: 1024 ** 2,
@@ -420,21 +357,21 @@ function parseSize(size: string | number): number {
   return Math.floor(parseFloat(num) * multiplier);
 }
 
-function parseTime(time: ExpireTime): number {
+function parseTime(time) {
   const match = /^(\d{1,3})([mh])$/i.exec(time);
   if (!match) {
     throw new Error(`Invalid time format: ${time}`);
   }
 
-  const num = parseInt(match[1]!, 10);
-  const unit = match[2]!.toLowerCase();
+  const num = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
 
-  const units: Record<TimeType, number> = {
+  const units = {
     m: 60 * 1000,
     h: 60 * 60 * 1000,
   };
 
-  const multiplier = units[unit as TimeType];
+  const multiplier = units[unit];
   if (!multiplier) {
     throw new Error(`Invalid time unit: ${unit}`);
   }
@@ -442,17 +379,14 @@ function parseTime(time: ExpireTime): number {
   return num * multiplier;
 }
 
-function formatBytes(bytes: number): string {
+function formatBytes(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
-  error: boolean;
-  message?: string;
-} {
-  const required: (keyof UploadMetadataRequest)[] = ['fileName', 'fileSize', 'fileType', 'customeId'];
+function validateUploadMetadataRequest(query) {
+  const required = ['fileName', 'fileSize', 'fileType', 'customeId'];
   const missing = required.filter((k) => !query[k]);
   if (missing.length) {
     return { error: true, message: `Missing fields: ${missing.join(', ')}` };
@@ -460,10 +394,7 @@ function validateUploadMetadataRequest(query: Partial<UploadMetadataRequest>): {
   return { error: false };
 }
 
-function generatePresignURL(
-  data: UploadMetadataRequest,
-  options: generatePresignURLOptions
-): generatePresignURLResponse {
+function generatePresignURL(data, options) {
   const { ContentDiposition, expire, route } = options;
   const { fileName, fileSize, fileType, customeId } = data;
 
@@ -480,7 +411,7 @@ function generatePresignURL(
   const params = new URLSearchParams({
     expire: expireValue.toString(),
     customeId: customeId,
-    xDioIdentifier: process.env.DROPIO_APP_ID!,
+    xDioIdentifier: process.env.DROPIO_APP_ID,
     xDioFileName: fileName,
     xDioFileSize: fileSize.toString(),
     xDioFileType: fileType,
@@ -489,7 +420,7 @@ function generatePresignURL(
   });
 
   const urlToSign = `${baseUrl}?${params.toString()}`;
-  const hmac = createHmac('sha256', process.env.DROPIO_TOKEN!);
+  const hmac = createHmac('sha256', process.env.DROPIO_TOKEN);
   hmac.update(urlToSign);
   const signature = `hmac-sha256=${hmac.digest('hex')}`;
 
@@ -501,16 +432,13 @@ function generatePresignURL(
   };
 }
 
-export function createDropio() {
+function createDropio() {
   if (typeof window !== 'undefined') {
     throw new Error('createDropio can only be used in a server environment');
   }
 
-  return function defineUploader(config: FileValidationOptions) {
-    return function handleUpload(
-      data: UploadMetadataRequest,
-      options: generatePresignURLOptions
-    ): UploadMetadataResponse {
+  return function defineUploader(config) {
+    return function handleUpload(data, options) {
       const dataFileType = data.fileType.split('/')[0] ?? '';
       const fileConfig = config[data.fileType] ?? config[dataFileType];
 
@@ -519,7 +447,7 @@ export function createDropio() {
       }
 
       const { error, message } = validateUploadMetadataRequest(data);
-      if (error) return { isError: true, message: message! };
+      if (error) return { isError: true, message: message };
 
       const maxSize = parseSize(fileConfig.maxFileSize ?? '10MB');
       if (data.fileSize > maxSize) {
@@ -539,26 +467,26 @@ export function createDropio() {
   };
 }
 
-export class DIOApi {
-  async delete(fileKeys: string[]): Promise<responseDIOApi<null>> {
+class DIOApi {
+  async delete(fileKeys) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/d/${process.env.DROPIO_APP_ID!}`, {
+      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/d/${process.env.DROPIO_APP_ID}`, {
         method: 'DELETE',
         cache: 'no-store',
         headers: {
-          Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
+          Authorization: `Bearer ${process.env.DROPIO_TOKEN}`,
         },
         body: JSON.stringify({ fileKeys: fileKeys }),
         signal: controller.signal,
       });
 
-      let response: ServerApiResponse<null> | null = null;
+      let response = null;
 
       try {
-        response = (await res.json()) as ServerApiResponse<null>;
+        response = await res.json();
       } catch (jsonError) {
         console.error('Failed to parse JSON from delete dioapi:', jsonError);
         return { error: 'Failed to parse JSON from delete dioapi' };
@@ -577,24 +505,24 @@ export class DIOApi {
       clearTimeout(timeoutId);
     }
   }
-  async bucketDetails(): Promise<responseDIOApi<null>> {
+  async bucketDetails() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID!}`, {
+      const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID}`, {
         method: 'GET',
         cache: 'no-store',
         headers: {
-          Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
+          Authorization: `Bearer ${process.env.DROPIO_TOKEN}`,
         },
         signal: controller.signal,
       });
 
-      let response: ServerApiResponse<null> | null = null;
+      let response = null;
 
       try {
-        response = (await res.json()) as ServerApiResponse<null>;
+        response = await res.json();
       } catch (jsonError) {
         console.error('Failed to parse JSON from get bucket details dioapi:', jsonError);
         return { error: 'Failed to parse JSON from get bucket details' };
@@ -605,7 +533,7 @@ export class DIOApi {
         return { error: response?.message };
       }
 
-      return { success: response?.message };
+      return { data: response?.data };
     } catch (error) {
       console.error('Error get bucket details:', error);
       return { error: 'Error During get bucket details' };
@@ -615,6 +543,8 @@ export class DIOApi {
   }
 }
 
+exports.createDropio = createDropio;
+exports.DIOApi = DIOApi;
 
 
 ```

@@ -89,6 +89,13 @@ export type UploadMetadataResponse =
   | { isError: false; presignedUrl: string; key: string }
   | { isError: true; message: string };
 
+export type BucketDetailsType = {
+  appId: string;
+  name: string;
+  quota: number;
+  quotaUsage: number;
+};
+
 function parseSize(size: string | number): number {
   if (typeof size === 'number') return size;
 
@@ -272,7 +279,7 @@ export class DIOApi {
       clearTimeout(timeoutId);
     }
   }
-  async bucketDetails(): Promise<responseDIOApi<null>> {
+  async bucketDetails(): Promise<responseDIOApi<BucketDetailsType>> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
@@ -286,10 +293,10 @@ export class DIOApi {
         signal: controller.signal,
       });
 
-      let response: ServerApiResponse<null> | null = null;
+      let response: ServerApiResponse<BucketDetailsType> | null = null;
 
       try {
-        response = (await res.json()) as ServerApiResponse<null>;
+        response = (await res.json()) as ServerApiResponse<BucketDetailsType>;
       } catch (jsonError) {
         console.error('Failed to parse JSON from get bucket details dioapi:', jsonError);
         return { error: 'Failed to parse JSON from get bucket details' };
@@ -300,7 +307,7 @@ export class DIOApi {
         return { error: response?.message };
       }
 
-      return { success: response?.message };
+      return { data: response?.data };
     } catch (error) {
       console.error('Error get bucket details:', error);
       return { error: 'Error During get bucket details' };
@@ -525,7 +532,7 @@ class DIOApi {
         return { error: response?.message };
       }
 
-      return { success: response?.message };
+      return { data: response?.data };
     } catch (error) {
       console.error('Error get bucket details:', error);
       return { error: 'Error During get bucket details' };
@@ -537,7 +544,6 @@ class DIOApi {
 
 exports.createDropio = createDropio;
 exports.DIOApi = DIOApi;
-
 
 
 ```
