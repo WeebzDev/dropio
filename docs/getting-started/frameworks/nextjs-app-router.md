@@ -342,11 +342,15 @@ export class DIOApi {
 
 :::warning[**Note on Supported File Types**]
 
-> The list of MIME types is not fully supported yet. At the moment, **only image files** are allowed. If you attempt to upload a non-image file, you will receive an error response like the following:
+> The list of supported MIME types is not yet exhaustive. [Check here](https://docs.google.com/document/d/1cEeGUh09POXwmoFOK8894p1f1Z6_cLtkgIx7bsJFOhk) to see which file types are currently supported.  
+>  
+> If you require support for a specific file type, you may submit a request via Discord.  
+>  
+> Attempting to upload an unsupported file type will result in an error response similar to the following:
 
 ```ts
   error: true,
-  message: "Invalid file type. Only image files are allowed.",
+  message: "Invalid file type.",
   code: 400,
 ```
 

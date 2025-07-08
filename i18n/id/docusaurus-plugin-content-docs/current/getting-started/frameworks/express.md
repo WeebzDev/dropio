@@ -573,11 +573,15 @@ exports.DIOApi = DIOApi;
 </Tabs>
 
 :::warning[**Catatan tentang Jenis File yang Didukung**]  
-> Daftar MIME type belum sepenuhnya didukung. Saat ini, **hanya file gambar** yang diperbolehkan. Jika Anda mencoba mengunggah file selain gambar, Anda akan menerima respons error seperti berikut:
+> Daftar MIME type yang didukung saat ini belum sepenuhnya lengkap. [Periksa di sini](https://docs.google.com/document/d/1cEeGUh09POXwmoFOK8894p1f1Z6_cLtkgIx7bsJFOhk) untuk melihat jenis file yang saat ini didukung.  
+>  
+> Jika Anda memerlukan dukungan untuk jenis file tertentu, Anda dapat mengajukan permintaan melalui Discord.  
+>  
+> Jika Anda mencoba mengunggah jenis file yang tidak didukung, Anda akan menerima respons error seperti berikut:
 
 ```ts
   error: true,
-  message: "Invalid file type. Only image files are allowed.",
+  message: "Invalid file type.",
   code: 400,
 ```
 :::
