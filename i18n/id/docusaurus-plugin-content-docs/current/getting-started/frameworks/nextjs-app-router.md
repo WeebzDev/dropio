@@ -19,20 +19,37 @@ import TabItem from '@theme/TabItem';
 import { randomBytes, createHash, createHmac } from 'crypto';
 
 export type AllowedMimeTypes =
-  | 'image/png'
   | 'image/jpeg'
-  | 'image/webp'
+  | 'image/png'
   | 'image/gif'
+  | 'image/webp'
   | 'image/svg+xml'
+  | 'image/bmp'
+  | 'image/tiff'
+  | 'image/x-icon'
+  | 'image/vnd.microsoft.icon'
+  | 'image/heif'
+  | 'image/heic'
+  | 'image/avif'
+  | 'image'
   | 'video/mp4'
   | 'video/webm'
   | 'video/ogg'
+  | 'video/quicktime'
+  | 'video'
   | 'audio/mpeg'
   | 'audio/wav'
+  | 'audio/ogg'
+  | 'audio/webm'
+  | 'audio'
+  | 'application/pdf'
   | 'text/plain'
-  | 'image'
-  | 'video'
-  | 'audio';
+  | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  | 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  | 'application/msword'
+  | 'application/vnd.ms-excel'
+  | 'application/vnd.ms-powerpoint';
 
 export type OneToTen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
