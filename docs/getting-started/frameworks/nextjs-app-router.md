@@ -15,6 +15,14 @@ Make sure to run the commands using a standalone Git Bash terminal, not the one 
 Do not use CMD or PowerShell either — they will not working.
 :::
 
+<details>
+  <summary>Tutorial</summary>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0qpVvdK4wq0" 
+frameborder="0" allowfullscreen></iframe>
+
+</details>
+
 ```sh title="dropio-setup.sh"
 # Warna Text
 GREEN='\e[32m'

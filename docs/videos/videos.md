@@ -11,3 +11,8 @@ Each step is presented clearly without any voice narration or background music, 
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/KGLkWk9BP4o" 
 frameborder="0" allowfullscreen></iframe>
+
+## Dropio Setup From Zero Using Script (NextJs App Router)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0qpVvdK4wq0" 
+frameborder="0" allowfullscreen></iframe>

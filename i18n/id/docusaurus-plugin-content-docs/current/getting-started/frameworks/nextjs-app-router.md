@@ -15,6 +15,14 @@ Pastikan kamu menjalankan perintah melalui terminal Git Bash yang terpisah dari 
 Jangan gunakan terminal bawaan VSCode, CMD, atau PowerShell, karena perintah tidak akan berjalan di sana.
 :::
 
+<details>
+  <summary>Tutorial</summary>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0qpVvdK4wq0" 
+frameborder="0" allowfullscreen></iframe>
+
+</details>
+
 ```sh title="dropio-setup.sh"
 # Warna Text
 GREEN='\e[32m'
