@@ -25,10 +25,15 @@ frameborder="0" allowfullscreen></iframe>
 
 ```sh title="dropio-setup.sh"
 # Warna Text
-GREEN='\e[32m'
-YELLOW='\e[33m'
-CYAN='\e[36m'
-RESET='\e[0m'
+GREEN="\e[32m"
+YELLOW="\e[33m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+# Kamu juga bisa setting ke spesifik versi 
+# Example : 
+# VERSION="v/1.0.0"
+VERSION="latest"
 
 # Step 1: Clone repository
 echo -e "${CYAN} Cloning dropio repository...${RESET}"
@@ -41,7 +46,7 @@ echo -e "${GREEN} Berhasil Membuat Folder Lib.${RESET}"
 
 # Step 3: Salin file library dropio
 echo -e "${YELLOW} Menyalin file lib/dropio...${RESET}"
-cp -r ./dropio/template/nextjs-app/lib/dropio/* ./src/lib/dropio
+cp -r "./dropio/template/nextjs-app/${VERSION}/lib/dropio/*" ./src/lib/dropio
 echo -e "${GREEN} Berhasil Menyalin File Lib.${RESET}"
 
 # Step 4: Buat folder untuk API dropio
@@ -51,7 +56,7 @@ echo -e "${GREEN} Berhasil Membuat Folder Api.${RESET}"
 
 # Step 5: Salin file API dropio
 echo -e "${YELLOW} Menyalin file api/dropio...${RESET}"
-cp -r ./dropio/template/nextjs-app/api/dropio/* ./src/app/api/dropio
+cp -r "./dropio/template/nextjs-app/${VERSION}/api/dropio/*" ./src/app/api/dropio
 echo -e "${GREEN} Berhasil Menyalin File Api.${RESET}"
 
 # Step 6: Buat folder utils
@@ -61,7 +66,7 @@ echo -e "${GREEN} Berhasil Membuat Folder Utils.${RESET}"
 
 # Step 7: Salin file utils
 echo -e "${YELLOW} Menyalin file utils...${RESET}"
-cp -r ./dropio/template/nextjs-app/utils/* ./src/utils
+cp -r "./dropio/template/nextjs-app/${VERSION}/utils/*" ./src/utils
 echo -e "${GREEN} Berhasil Menyalin File Utils.${RESET}"
 
 # Step 8: Hapus folder dropio
