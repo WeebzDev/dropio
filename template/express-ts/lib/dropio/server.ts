@@ -203,10 +203,6 @@ function generatePresignURL(
 }
 
 export function createDropio() {
-  if (typeof window !== 'undefined') {
-    throw new Error('createDropio can only be used in a server environment');
-  }
-
   return function defineUploader(config: FileValidationOptions) {
     return function handleUpload(
       data: UploadMetadataRequest,
@@ -248,8 +244,8 @@ export class DIOApi {
     try {
       const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/d/${process.env.DROPIO_APP_ID!}`, {
         method: 'DELETE',
-        cache: 'no-store',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
         },
         body: JSON.stringify({ fileKeys: fileKeys }),
@@ -285,7 +281,6 @@ export class DIOApi {
     try {
       const res = await fetch(`${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID!}`, {
         method: 'GET',
-        cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
