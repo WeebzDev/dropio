@@ -14,6 +14,10 @@ Salah satu keunggulan utama Dropio adalah kesederhanaannya — tidak memerlukan 
 
 Untuk memulai, buat aplikasi baru di [dropio.my.id](https://www.dropio.my.id) dan ambil API key dari tab API Keys. Setelah itu, pilih framework yang Anda gunakan untuk mempelajari cara mengintegrasikan Dropio ke dalam aplikasi Anda dalam hitungan menit.
 
+## Speedrun
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rXb2C700ZHM" 
+frameborder="0" allowfullscreen></iframe>
+
 ## Framework & Library
 
 ### Frontend
