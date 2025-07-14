@@ -37,6 +37,10 @@ frameborder="0" allowfullscreen></iframe>
 
 :::
 
+## Example Real Project
+
+- **[Galeriku (WIP)](https://galeriku.weebzdev.my.id/)**
+
 ## Uploading Files
 
 The upload flow is designed to be secure, performant, and easy to understand:
