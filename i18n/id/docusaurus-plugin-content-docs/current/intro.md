@@ -40,7 +40,7 @@ frameborder="0" allowfullscreen></iframe>
 
 ## Contoh Real Project
 
-- **[Galeriku (WIP)](https://galeriku.weebzdev.my.id/)**
+- **[Galeriku (WIP)](https://galeriku.weebzdev.my.id/)** - **[Github](https://github.com/WeebzDev/Galeriku)**
 
 ## Mengunggah File
 

@@ -39,7 +39,7 @@ frameborder="0" allowfullscreen></iframe>
 
 ## Example Real Project
 
-- **[Galeriku (WIP)](https://galeriku.weebzdev.my.id/)**
+- **[Galeriku (WIP)](https://galeriku.weebzdev.my.id/)** - **[Github](https://github.com/WeebzDev/Galeriku)**
 
 ## Uploading Files
 
